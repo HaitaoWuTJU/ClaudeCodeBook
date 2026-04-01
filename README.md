@@ -393,3 +393,6 @@ bigqueryExporter.ts → POST 请求到 BigQuery
 **专有 (Proprietary)** — Claude Code 由 Anthropic PBC 开发和维护。使用需遵守 Anthropic 的可接受使用政策和条款。
 
 如需商业许可或企业部署，请访问 [anthropic.com](https://anthropic.com) 联系 Anthropic。
+
+
+[![Star History Chart](https://api.star-history.com/svg?repos=HaitaoWuTJU/ClaudeCodeBook&type=Date)](https://star-history.com/#HaitaoWuTJU/ClaudeCodeBook&Date)
