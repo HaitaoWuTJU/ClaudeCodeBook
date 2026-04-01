@@ -395,4 +395,12 @@ bigqueryExporter.ts → POST 请求到 BigQuery
 如需商业许可或企业部署，请访问 [anthropic.com](https://anthropic.com) 联系 Anthropic。
 
 
-[![Star History Chart](https://api.star-history.com/svg?repos=HaitaoWuTJU/ClaudeCodeBook&type=Date)](https://star-history.com/#HaitaoWuTJU/ClaudeCodeBook&Date)
+<p align="center">
+  <a href="https://star-history.com/#HaitaoWuTJU/ClaudeCodeBook&Date">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=HaitaoWuTJU/ClaudeCodeBook&type=Date&theme=dark" />
+      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=HaitaoWuTJU/ClaudeCodeBook&type=Date" />
+      <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=HaitaoWuTJU/ClaudeCodeBook&type=Date" width="600" />
+    </picture>
+  </a>
+</p>
