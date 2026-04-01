@@ -1,394 +1,393 @@
-# Claude Code Book
-[English](README.md) | [简体中文](README_zh.md)
+# Claude Code 手册
+[English](README_en.md) | [简体中文](README.md)
+我们自动化的生成了Claude Code Book: [ClaudeCodeBook-中文.pdf](book.pdf) | [ClaudeCodeBook-English.pdf](book_en.pdf)
 
-We have automatically generated the Claude Code Book: [book.pdf](book.pdf)"
+## 概述
+> Claude Code：由 Anthropic 构建的、由 AI 驱动的软件开发 CLI 智能体（命令行界面代理）。
 
-## Overview
-> Claude Code: An AI-powered CLI agent for software development, built by Anthropic.
+Claude Code 是一个命令行界面工具，它将 Claude 的推理能力直接引入到开发工作流中。它提供了一个带有 AI 辅助的交互式 REPL（交互式解释器）、用于文件操作和命令执行的综合工具系统、Vim 风格的模式编辑，以及与开发工作流（Git、Shell 命令、编辑器）的深度集成。
 
-Claude Code is a command-line interface tool that brings Claude's reasoning capabilities directly into the development workflow. It provides an interactive REPL with AI assistance, a comprehensive tool system for file operations and command execution, Vim-style modal editing, and deep integration with development workflows (Git, shell commands, editors).
+该项目使用 TypeScript 编写，并以 Bun 作为运行时和构建工具。它面向多个平台（macOS、Linux、Windows），并支持多种身份验证方法，包括 OAuth、API 密钥以及云提供商集成（AWS Bedrock、Google Vertex AI）。
 
-The project is written in TypeScript with Bun as the runtime and build tool. It targets multiple platforms (macOS, Linux, Windows) and supports multiple authentication methods including OAuth, API keys, and cloud provider integrations (AWS Bedrock, Google Vertex AI).
-
-## Repository Structure
+## 仓库结构
 
 ```
 claude-code/
-├── src/                          # Main application source code
-│   ├── index.ts                  # Application entry point
-│   ├── commands.ts               # Slash command registry and loading
-│   ├── context.ts                # AI context preparation (system/user prompts)
-│   ├── cost-tracker.ts           # API usage tracking and cost reporting
-│   ├── tools.ts                  # Tool registry and MCP integration
+├── src/                          # 主应用程序源代码
+│   ├── index.ts                  # 应用程序入口点
+│   ├── commands.ts               # 斜杠命令注册与加载
+│   ├── context.ts                # AI 上下文准备（系统/用户提示词）
+│   ├── cost-tracker.ts           # API 使用量追踪与成本报告
+│   ├── tools.ts                  # 工具注册与 MCP 集成
 │   │
-│   ├── commands/                  # Slash command implementations (~40 commands)
-│   │   ├── add.ts                 # Add/edit code with AI
-│   │   ├── autofixPr.ts          # Auto-fix pull requests
-│   │   ├── bash.ts               # Shell command execution
-│   │   ├── config.ts             # Configuration management
-│   │   ├── diff.ts               # Git diff viewer
-│   │   ├── git.ts                # Git operations
+│   ├── commands/                  # 斜杠命令实现（约 40 个命令）
+│   │   ├── add.ts                 # 使用 AI 添加/编辑代码
+│   │   ├── autofixPr.ts          # 自动修复 Pull Request
+│   │   ├── bash.ts               # Shell 命令执行
+│   │   ├── config.ts             # 配置管理
+│   │   ├── diff.ts               # Git 差异查看器
+│   │   ├── git.ts                # Git 操作
 │   │   └── ...
 │   │
-│   ├── tools/                     # Tool implementations for AI agent
+│   ├── tools/                     # AI 智能体的工具实现
 │   │   ├── BashTool.ts
 │   │   ├── FileReadTool.ts
 │   │   ├── WebSearchTool.ts
 │   │   ├── AgentTool.ts
 │   │   └── ...
 │   │
-│   ├── utils/                     # Shared utilities (~40 subdirectories)
-│   │   ├── bash/                  # Shell parsing, security, execution
-│   │   │   ├── exec.ts           # Command execution engine
-│   │   │   ├── parser.ts         # Shell parser utilities
-│   │   │   ├── security.ts       # Command security validation
-│   │   │   └── shellSnapshot.ts  # Shell state capture
-│   │   ├── git/                  # Git operations
-│   │   ├── settings/             # Configuration persistence
-│   │   ├── analytics/            # Session analytics and BigQuery export
-│   │   ├── telemetry/            # OpenTelemetry tracing and metrics
-│   │   ├── teleport/             # Remote session API client
-│   │   ├── vim/                  # Vim emulation layer
-│   │   ├── todo/                 # Todo data types
-│   │   ├── ultraplan/            # Ultra-plan workflow
+│   ├── utils/                     # 共享实用工具（约 40 个子目录）
+│   │   ├── bash/                  # Shell 解析、安全性、执行
+│   │   │   ├── exec.ts           # 命令执行引擎
+│   │   │   ├── parser.ts         # Shell 解析实用工具
+│   │   │   ├── security.ts       # 命令安全验证
+│   │   │   └── shellSnapshot.ts  # Shell 状态捕获
+│   │   ├── git/                  # Git 操作
+│   │   ├── settings/             # 配置持久化
+│   │   ├── analytics/            # 会话分析与 BigQuery 导出
+│   │   ├── telemetry/            # OpenTelemetry 追踪与指标
+│   │   ├── teleport/             # 远程会话 API 客户端
+│   │   ├── vim/                  # Vim 模拟层
+│   │   ├── todo/                 # Todo 数据类型
+│   │   ├── ultraplan/            # Ultra-plan 工作流
 │   │   └── ...
 │   │
-│   ├── bootstrap/                 # Application initialization
-│   │   └── state.ts              # Global STATE singleton
+│   ├── bootstrap/                 # 应用程序初始化
+│   │   └── state.ts              # 全局 STATE（状态）单例
 │   │
-│   ├── bridge/                    # Remote control infrastructure
-│   │   ├── bridgeApi.ts          # Environments REST API client
-│   │   ├── bridgeConfig.ts       # Configuration with OAuth/keychain
-│   │   ├── bridgeDebug.ts        # Fault injection for testing
-│   │   └── workSecret.ts        # Work secret decoding and session routing
+│   ├── bridge/                    # 远程控制基础设施
+│   │   ├── bridgeApi.ts          # 环境 REST API 客户端
+│   │   ├── bridgeConfig.ts       # 带有 OAuth/keychain 的配置
+│   │   ├── bridgeDebug.ts        # 用于测试的故障注入
+│   │   └── workSecret.ts        # Work secret 解码与会话路由
 │   │
-│   ├── buddy/                     # Companion mascot system
-│   │   ├── companion.js          # Creature generation (seeded PRNG)
-│   │   ├── sprites.ts           # ASCII art rendering
-│   │   └── CompanionSprite.tsx  # React sprite component
+│   ├── buddy/                     # 伙伴吉祥物系统
+│   │   ├── companion.js          # 生物生成（基于种子的 PRNG）
+│   │   ├── sprites.ts           # ASCII 艺术渲染
+│   │   └── CompanionSprite.tsx  # React 虚拟形象组件
 │   │
 │   ├── assistant/                # Teleport Agent SDK
-│   │   ├── entrypoints/         # SDK entry points and types
-│   │   └── utils/               # API client with OAuth support
+│   │   ├── entrypoints/         # SDK 入口点与类型
+│   │   └── utils/               # 支持 OAuth 的 API 客户端
 │   │
-│   ├── voice/                     # Voice mode feature gating
-│   │   └── voice-mode.ts        # GrowthBook + OAuth auth checks
+│   ├── voice/                     # 语音模式功能门控
+│   │   └── voice-mode.ts        # GrowthBook + OAuth 身份验证检查
 │   │
-│   └── vim/                       # Vim emulation
-│       ├── transitions.ts        # State machine (NORMAL/INSERT modes)
-│       ├── motions.ts           # Cursor movement functions
-│       ├── operators.ts         # Edit operations (delete, yank, etc.)
-│       ├── textObjects.ts       # Text object boundaries
-│       └── types.ts             # TypeScript interfaces and constants
+│   └── vim/                       # Vim 模拟
+│       ├── transitions.ts        # 状态机（NORMAL/INSERT 模式）
+│       ├── motions.ts           # 光标移动函数
+│       ├── operators.ts         # 编辑操作（删除、复制等）
+│       ├── textObjects.ts       # 文本对象边界
+│       └── types.ts             # TypeScript 接口与常量
 │
-├── src/commands.ts               # Command registry entry
-├── src/tools.ts                  # Tool registry entry
-├── src/context.ts                # Context preparation entry
-├── src/cost-tracker.ts           # Cost tracking entry
-├── src/index.ts                   # Main entry point
+├── src/commands.ts               # 命令注册入口
+├── src/tools.ts                  # 工具注册入口
+├── src/context.ts                # 上下文准备入口
+├── src/cost-tracker.ts           # 成本追踪入口
+├── src/index.ts                   # 主入口点
 │
-├── package.json                  # Node.js dependencies
-├── bunfig.toml                   # Bun build configuration
-├── tsconfig.json                 # TypeScript configuration
+├── package.json                  # Node.js 依赖
+├── bunfig.toml                   # Bun 构建配置
+├── tsconfig.json                 # TypeScript 配置
 └── ...
 ```
 
-## Getting Started
+## 开始使用
 
-### Prerequisites
+### 先决条件
 
-- **Bun** ≥ 1.0 (install via [bun.sh](https://bun.sh))
-- **Node.js** ≥ 18 (for fallback)
-- **macOS** / **Linux** / **Windows** (WSL supported)
+- **Bun** ≥ 1.0 (通过 [bun.sh](https://bun.sh) 安装)
+- **Node.js** ≥ 18 (作为后备方案)
+- **macOS** / **Linux** / **Windows** (支持 WSL)
 
-### Installation
+### 安装
 
 ```bash
-# Clone the repository
+# 克隆仓库
 git clone https://github.com/anthropics/claude-code.git
 cd claude-code
 
-# Install dependencies with Bun
+# 使用 Bun 安装依赖
 bun install
 
-# Build the project
+# 构建项目
 bun run build
 
-# Link for development
+# 链接以进行开发
 bun link
 ```
 
-### Development Setup
+### 开发环境设置
 
 ```bash
-# Run in development mode with hot reload
+# 在支持热重载的开发模式下运行
 bun run dev
 
-# Run tests
+# 运行测试
 bun test
 
-# Run with debug output
+# 带有调试输出运行
 DEBUG=* bun run start
 ```
 
-### Environment Variables
+### 环境变量
 
-| Variable | Description | Default |
+| 变量 | 说明 | 默认值 |
 |----------|-------------|---------|
-| `ANTHROPIC_API_KEY` | Anthropic API key | Required for API key auth |
-| `DEBUG` | Enable debug logging | - |
-| `BUN_ENV` | Environment (`development`, `production`) | `production` |
-| `OTEL_LOG_USER_PROMPTS` | Include user prompts in telemetry | `false` |
-| `BETA_SESSION_TRACING` | Enable beta tracing attributes | `false` |
+| `ANTHROPIC_API_KEY` | Anthropic API 密钥 | API 密钥认证必需 |
+| `DEBUG` | 启用调试日志 | - |
+| `BUN_ENV` | 环境 (`development`, `production`) | `production` |
+| `OTEL_LOG_USER_PROMPTS` | 在遥测中包含用户提示词 | `false` |
+| `BETA_SESSION_TRACING` | 启用测试版追踪属性 | `false` |
 
-## Usage
+## 用法
 
-### Basic Commands
+### 基本命令
 
 ```bash
-# Start an interactive session
+# 启动交互式会话
 claude
 
-# Start with a specific task
+# 以特定任务启动
 claude "Explain this codebase"
 
-# Start with auto-approve mode (for automation)
+# 以自动批准模式启动（用于自动化）
 claude --approve-all "Review and fix bugs"
 
-# Resume a previous session
+# 恢复之前的会话
 claude --resume <session-id>
 ```
 
-### Slash Commands
+### 斜杠命令
 
-Available in the interactive REPL:
+可在交互式 REPL 中使用：
 
-| Command | Description |
+| 命令 | 说明 |
 |---------|-------------|
-| `/add [description]` | Add or edit code based on description |
-| `/bash <command>` | Execute a shell command |
-| `/diff [file]` | Show uncommitted changes |
-| `/git <subcommand>` | Run a git command |
-| `/config [key] [value]` | View or modify configuration |
-| `/clear` | Clear the conversation |
-| `/help` | Show help information |
-| `/model <name>` | Switch the active model |
-| `/compact` | Compact context window |
-| `/session` | Show current session info |
+| `/add [description]` | 根据描述添加或编辑代码 |
+| `/bash <command>` | 执行 Shell 命令 |
+| `/diff [file]` | 显示未提交的更改 |
+| `/git <subcommand>` | 运行 git 命令 |
+| `/config [key] [value]` | 查看或修改配置 |
+| `/clear` | 清除对话 |
+| `/help` | 显示帮助信息 |
+| `/model <name>` | 切换活动模型 |
+| `/compact` | 压缩上下文窗口 |
+| `/session` | 显示当前会话信息 |
 
-### Configuration
+### 配置
 
 ```bash
-# View current config
+# 查看当前配置
 claude config list
 
-# Set a config value
+# 设置配置值
 claude config set model claude-opus-4-5
 
-# Set an environment variable
+# 设置环境变量
 claude config set --env API_KEY your_key
 ```
 
-## Key Modules & Scripts
+## 关键模块与脚本
 
-### Core Entry Points
+### 核心入口点
 
-| File | Purpose |
+| 文件 | 用途 |
 |------|---------|
-| `src/index.ts` | Main entry point; orchestrates initialization, session management, and the REPL loop |
-| `src/commands.ts` | Central registry for all slash commands with feature-gated loading |
-| `src/tools.ts` | Tool registry assembling built-in tools, MCP tools, and permission-filtered tools |
-| `src/context.ts` | Prepares system and user context for AI conversations |
-| `src/cost-tracker.ts` | Tracks API usage, costs, and generates usage reports |
+| `src/index.ts` | 主入口点；编排初始化、会话管理以及 REPL 循环 |
+| `src/commands.ts` | 所有斜杠命令的中央注册表，包含功能门控加载 |
+| `src/tools.ts` | 工具注册表，组装内置工具、MCP 工具和经过权限过滤的工具 |
+| `src/context.ts` | 为 AI 对话准备系统和用户上下文 |
+| `src/cost-tracker.ts` | 追踪 API 使用量、成本，并生成使用情况报告 |
 
-### State Management
+### 状态管理
 
-| Module | Purpose |
+| 模块 | 用途 |
 |--------|---------|
-| `src/bootstrap/state.ts` | Global STATE singleton with typed accessors for all runtime state |
-| `src/utils/settings/settings.ts` | Project-level configuration persistence |
+| `src/bootstrap/state.ts` | 全局 STATE 单例，带有所有运行时状态的类型化访问器 |
+| `src/utils/settings/settings.ts` | 项目级配置持久化 |
 
-### Security & Bash Execution
+### 安全与 Bash 执行
 
-| Module | Purpose |
+| 模块 | 用途 |
 |--------|---------|
-| `src/utils/bash/security.ts` | Fail-closed security model; rejects unverifiable shell constructs |
-| `src/utils/bash/exec.ts` | Command execution with streaming, timeout, and cancellation |
-| `src/utils/bash/shellSnapshot.ts` | Captures shell state for context injection |
+| `src/utils/bash/security.ts` | 默认拒绝的安全模型；拒绝无法验证的 Shell 结构 |
+| `src/utils/bash/exec.ts` | 带有流式传输、超时和取消功能的命令执行 |
+| `src/utils/bash/shellSnapshot.ts` | 捕获 Shell 状态以供上下文注入 |
 
-### Telemetry & Analytics
+### 遥测与分析
 
-| Module | Purpose |
+| 模块 | 用途 |
 |--------|---------|
-| `src/utils/telemetry/index.ts` | Public API for OpenTelemetry tracing and metrics |
-| `src/utils/telemetry/sessionTracing.ts` | Span management for interactions, LLM calls, and tools |
-| `src/utils/telemetry/bigqueryExporter.ts` | Exports metrics to BigQuery |
-| `src/utils/analytics/sessionAnalytics.ts` | Session-level analytics with BigQuery export |
+| `src/utils/telemetry/index.ts` | 用于 OpenTelemetry 追踪和指标的公共 API |
+| `src/utils/telemetry/sessionTracing.ts` | 交互、LLM 调用和工具的 Span（跨度）管理 |
+| `src/utils/telemetry/bigqueryExporter.ts` | 将指标导出到 BigQuery |
+| `src/utils/analytics/sessionAnalytics.ts` | 会话级分析与 BigQuery 导出 |
 
-### Vim Emulation
+### Vim 模拟
 
-| Module | Purpose |
+| 模块 | 用途 |
 |--------|---------|
-| `src/vim/transitions.ts` | State machine coordinating NORMAL/INSERT modes |
-| `src/vim/motions.ts` | Pure functions for cursor movement |
-| `src/vim/operators.ts` | Pure functions for edit operations |
-| `src/vim/textObjects.ts` | Functions for text object boundaries |
-| `src/vim/types.ts` | TypeScript interfaces and state type definitions |
+| `src/vim/transitions.ts` | 协调 NORMAL/INSERT（正常/插入）模式的状态机 |
+| `src/vim/motions.ts` | 用于光标移动的纯函数 |
+| `src/vim/operators.ts` | 用于编辑操作的纯函数 |
+| `src/vim/textObjects.ts` | 用于文本对象边界的函数 |
+| `src/vim/types.ts` | TypeScript 接口和状态类型定义 |
 
-### Remote & Cloud Features
+### 远程与云端功能
 
-| Module | Purpose |
+| 模块 | 用途 |
 |--------|---------|
-| `src/bridge/bridgeApi.ts` | Environments REST API client for remote control |
-| `src/bridge/bridgeConfig.ts` | Configuration with OAuth and keychain integration |
-| `src/assistant/` | Teleport Agent SDK for session management |
-| `src/utils/teleport/api.ts` | Sessions API client for remote environments |
+| `src/bridge/bridgeApi.ts` | 用于远程控制的环境 REST API 客户端 |
+| `src/bridge/bridgeConfig.ts` | 带有 OAuth 和钥匙串（keychain）集成的配置 |
+| `src/assistant/` | 用于会话管理的 Teleport Agent SDK |
+| `src/utils/teleport/api.ts` | 远程环境的 Sessions API 客户端 |
 
-## Architecture
+## 架构
 
-### System Architecture
+### 系统架构
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                         CLI Interface                           │
-│   User Input → Slash Commands → REPL → Vim Mode                 │
+│                           CLI 界面                              │
+│   用户输入 → 斜杠命令 → REPL → Vim 模式                         │
 └────────────────────────────┬────────────────────────────────────┘
                              │
 ┌────────────────────────────▼────────────────────────────────────┐
-│                    Command Registry (commands.ts)               │
-│   Resolves slash commands, checks feature flags, validates perms  │
+│                    命令注册表 (commands.ts)                     │
+│   解析斜杠命令，检查功能标志，验证权限                          │
 └────────────────────────────┬────────────────────────────────────┘
                              │
 ┌────────────────────────────▼────────────────────────────────────┐
-│                     Tool Registry (tools.ts)                    │
-│   Built-in tools + MCP tools + permission-filtered tools        │
+│                     工具注册表 (tools.ts)                       │
+│   内置工具 + MCP 工具 + 权限过滤工具                            │
 └────────────────────────────┬────────────────────────────────────┘
                              │
 ┌────────────────────────────▼────────────────────────────────────┐
-│                    Tool Implementations                          │
+│                        工具实现                                 │
 │   BashTool, FileReadTool, WebSearchTool, AgentTool, ...         │
 └────────────────────────────┬────────────────────────────────────┘
                              │
 ┌────────────────────────────▼────────────────────────────────────┐
-│                    AI Model (Claude API)                         │
-│   Context prepared by context.ts                                │
+│                    AI 模型 (Claude API)                         │
+│   由 context.ts 准备的上下文                                    │
 └────────────────────────────┬────────────────────────────────────┘
                              │
 ┌────────────────────────────▼────────────────────────────────────┐
-│                    Cost Tracking (cost-tracker.ts)              │
-│                    Telemetry (telemetry/)                        │
-│                    Analytics (analytics/)                       │
+│                    成本追踪 (cost-tracker.ts)                   │
+│                    遥测 (telemetry/)                            │
+│                    分析 (analytics/)                            │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### Authentication Model
+### 身份验证模型
 
-Claude Code supports multiple authentication methods:
+Claude Code 支持多种身份验证方法：
 
-1. **OAuth** — User login via `claude auth login` (stored in macOS Keychain)
-2. **API Key** — Set via `ANTHROPIC_API_KEY` environment variable
-3. **Cloud Providers** — AWS Bedrock, Google Vertex AI, AWS IAM
-4. **Trusted Device** — Device tokens for remote control (CCR v2)
+1. **OAuth** — 用户通过 `claude auth login` 登录（存储在 macOS 钥匙串中）
+2. **API 密钥** — 通过 `ANTHROPIC_API_KEY` 环境变量设置
+3. **云提供商** — AWS Bedrock、Google Vertex AI、AWS IAM
+4. **受信任设备** — 用于远程控制的设备令牌 (CCR v2)
 
-### Feature Gating
+### 功能门控
 
-Features are gated via:
-- **GrowthBook** (`growthbook.js`) — Remote feature flags for A/B testing
-- **Bundle constants** (`bun:bundle`) — Dead-code elimination for disabled features
-- **Platform checks** — macOS-only features (Keychain, speech synthesis)
+功能通过以下方式进行门控：
+- **GrowthBook** (`growthbook.js`) — 用于 A/B 测试的远程功能标志
+- **Bundle 常量** (`bun:bundle`) — 针对已禁用功能的死代码消除
+- **平台检查** — 仅限 macOS 的功能（钥匙串、语音合成）
 
-## Data Pipeline
+## 数据流水线
 
-### Context Preparation Flow
+### 上下文准备流程
 
 ```
-1. User input received
+1. 接收用户输入
        │
 2. context.ts → getUserContext()
-       │        ├── Reads .claude/CLAUDE.md
-       │        ├── Reads .claude/instructions.md
-       │        └── Memoized per session
+       │        ├── 读取 .claude/CLAUDE.md
+       │        ├── 读取 .claude/instructions.md
+       │        └── 按会话进行记忆化 (Memoized)
        │
 3. context.ts → getSystemContext()
-       │        ├── Git status (branch, recent commits)
-       │        ├── Current directory info
-       │        └── Cache breaker injection
+       │        ├── Git 状态（分支、最近的提交）
+       │        ├── 当前目录信息
+       │        └── 缓存断路器 (Cache breaker) 注入
        │
-4. Combined into system prompt injection
+4. 组合成系统提示词注入
 ```
 
-### Telemetry Flow
+### 遥测流程
 
 ```
-Tool execution / LLM call
+工具执行 / LLM 调用
        │
-Span created by sessionTracing.ts
+由 sessionTracing.ts 创建 Span (跨度)
        │
-Events logged by events.ts (logOTelEvent)
+由 events.ts 记录事件 (logOTelEvent)
        │
-Metrics accumulated by OpenTelemetry SDK
+由 OpenTelemetry SDK 累积指标
        │
-bigqueryExporter.ts → POST to BigQuery API
+bigqueryExporter.ts → POST 请求到 BigQuery API
        │
-(Optionally) Perfetto trace file written
+（可选）写入 Perfetto 追踪文件
 ```
 
-### Session Analytics Flow
+### 会话分析流程
 
 ```
-Session starts
+会话开始
        │
-Analytics initialized with session ID
+使用会话 ID 初始化分析
        │
-Per-tool/per-command metrics accumulated
+累积每个工具/每个命令的指标
        │
-Session ends
+会话结束
        │
-bigqueryExporter.ts → POST to BigQuery
+bigqueryExporter.ts → POST 请求到 BigQuery
        │
-STATE.sessionAnalytics cleared
+清除 STATE.sessionAnalytics
 ```
 
-## Dependencies
+## 依赖项
 
-### Runtime Dependencies
+### 运行时依赖项
 
-| Package | Purpose |
+| 包名 | 用途 |
 |---------|---------|
-| `typescript` | TypeScript language support |
-| `@anthropic-ai/sdk` | Anthropic API client |
-| `@modelcontextprotocol/sdk` | MCP protocol implementation |
-| `@anthropic-ai/growthbook` | Feature flag client |
-| `@google-cloud/bigquery` | BigQuery analytics export |
-| `@aspect-build/rules_ts` | TypeScript build rules |
-| `@aspect/registry` | Aspect registry |
+| `typescript` | TypeScript 语言支持 |
+| `@anthropic-ai/sdk` | Anthropic API 客户端 |
+| `@modelcontextprotocol/sdk` | MCP 协议实现 |
+| `@anthropic-ai/growthbook` | 功能标志客户端 |
+| `@google-cloud/bigquery` | BigQuery 分析导出 |
+| `@aspect-build/rules_ts` | TypeScript 构建规则 |
+| `@aspect/registry` | Aspect 注册表 |
 | `@opentelemetry/*` | OpenTelemetry SDK |
-| `@vueuse/core` | Vue composition utilities |
-| `tree-sitter-bash` | Shell parsing |
-| `zod` | Schema validation |
-| `uuid` | UUID generation |
-| `semver` | Semantic version parsing |
-| `jose` | JWT handling |
-| `ora` | Terminal spinners |
-| `chalk` | Terminal colors |
-| `glob` | File globbing |
-| `diff` | Text diffing |
-| `yaml` | YAML parsing |
-| `zx` | Shell script utilities |
+| `@vueuse/core` | Vue 组合式实用工具 |
+| `tree-sitter-bash` | Shell 解析 |
+| `zod` | Schema 验证 |
+| `uuid` | UUID 生成 |
+| `semver` | 语义化版本解析 |
+| `jose` | JWT 处理 |
+| `ora` | 终端加载动画 (spinners) |
+| `chalk` | 终端颜色 |
+| `glob` | 文件 Glob 模式匹配 |
+| `diff` | 文本差异比较 |
+| `yaml` | YAML 解析 |
+| `zx` | Shell 脚本实用工具 |
 
-### Development Dependencies
+### 开发依赖项
 
-| Package | Purpose |
+| 包名 | 用途 |
 |---------|---------|
-| `bun` | Runtime and build tool |
-| `vitest` | Unit testing framework |
-| `@types/node` | Node.js type definitions |
-| `ts-node` | TypeScript execution |
-| `eslint` | Linting |
-| `prettier` | Code formatting |
+| `bun` | 运行时与构建工具 |
+| `vitest` | 单元测试框架 |
+| `@types/node` | Node.js 类型定义 |
+| `ts-node` | TypeScript 执行 |
+| `eslint` | 代码检查 (Linting) |
+| `prettier` | 代码格式化 |
 
-## License
+## 许可证
 
-**Proprietary** — Claude Code is developed and maintained by Anthropic PBC. Usage is subject to Anthropic's Acceptable Use Policy and Terms of Service.
+**专有 (Proprietary)** — Claude Code 由 Anthropic PBC 开发和维护。使用需遵守 Anthropic 的可接受使用政策和条款。
 
-For commercial licensing or enterprise deployments, contact Anthropic at [anthropic.com](https://anthropic.com).
+如需商业许可或企业部署，请访问 [anthropic.com](https://anthropic.com) 联系 Anthropic。
