@@ -1,5 +1,5 @@
 # Claude Code Book
-
+[English](README.md) | [简体中文](README_zh.md)
 > Claude Code: An AI-powered CLI agent for software development, built by Anthropic.
 
 ## Overview
