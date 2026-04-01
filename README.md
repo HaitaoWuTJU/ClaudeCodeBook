@@ -2,6 +2,7 @@
 [English](README_en.md) | [简体中文](README.md)
 
 我们自动化的生成了Claude Code Book: [ClaudeCodeBook-中文.pdf](book.pdf) | [ClaudeCodeBook-English.pdf](book_en.pdf)
+![目录](book.png)
 
 ## 概述
 > Claude Code：由 Anthropic 构建的、由 AI 驱动的软件开发 CLI 智能体（命令行界面代理）。

@@ -2,6 +2,7 @@
 [English](README_en.md) | [简体中文](README.md)
 
 We have automatically generated the Claude Code Book: [ClaudeCodeBook-中文.pdf](book.pdf) | [ClaudeCodeBook-English.pdf](book_en.pdf)
+![Content](book_en.png)
 
 ## Overview
 > Claude Code: An AI-powered CLI agent for software development, built by Anthropic.
