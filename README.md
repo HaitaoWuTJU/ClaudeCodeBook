@@ -1,8 +1,10 @@
 # Claude Code Book
 [English](README.md) | [简体中文](README_zh.md)
-> Claude Code: An AI-powered CLI agent for software development, built by Anthropic.
+
+We have automatically generated the Claude Code Book: [book.pdf](book.pdf)"
 
 ## Overview
+> Claude Code: An AI-powered CLI agent for software development, built by Anthropic.
 
 Claude Code is a command-line interface tool that brings Claude's reasoning capabilities directly into the development workflow. It provides an interactive REPL with AI assistance, a comprehensive tool system for file operations and command execution, Vim-style modal editing, and deep integration with development workflows (Git, shell commands, editors).
 
