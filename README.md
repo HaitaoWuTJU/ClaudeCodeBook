@@ -390,9 +390,9 @@ bigqueryExporter.ts → POST 请求到 BigQuery
 
 ## 许可证
 
-**专有 (Proprietary)** — Claude Code 由 Anthropic PBC 开发和维护。使用需遵守 Anthropic 的可接受使用政策和条款。
-
-如需商业许可或企业部署，请访问 [anthropic.com](https://anthropic.com) 联系 Anthropic。
+**专有 (Proprietary)** 
+Claude Code 由 Anthropic PBC 开发和维护。使用需遵守 Anthropic 的可接受使用政策和条款。如需商业许可或企业部署，请访问 [anthropic.com](https://anthropic.com) 联系 Anthropic。
+本repo不包含任何原始 Claude Code 源代码。
 
 
 <a href="https://www.star-history.com/?type=date&repos=HaitaoWuTJU%2FClaudeCodeBook">

@@ -391,5 +391,5 @@ STATE.sessionAnalytics cleared
 ## License
 
 **Proprietary** — Claude Code is developed and maintained by Anthropic PBC. Usage is subject to Anthropic's Acceptable Use Policy and Terms of Service.
-
 For commercial licensing or enterprise deployments, contact Anthropic at [anthropic.com](https://anthropic.com).
+This repo does not contain any original Claude Code source code.
