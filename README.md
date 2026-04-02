@@ -1,7 +1,7 @@
 # Claude Code 手册
 [English](README_en.md) | [简体中文](README.md)
 
-我们通过自动化文件扫描递归summary + LaTeX 生成 50+ 页中英双语技术书籍: [ClaudeCodeBook-中文.pdf](book.pdf) | [ClaudeCodeBook-English.pdf](book_en.pdf)
+我们通过自动化文件对1902个源码（1332 ts，552 tsx，18 js），通过 LaTeX 生成 50+ 页中英双语技术书籍: [ClaudeCodeBook-中文.pdf](book.pdf) | [ClaudeCodeBook-English.pdf](book_en.pdf)
 ![目录](book.png)
 
 ## 概述
